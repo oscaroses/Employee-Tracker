@@ -22,16 +22,16 @@ connection.connect(function (err) {
 });
 
 function startUp() {
-    inquirer.prompt([
-        {
-            type: "list",
-            name: "initial",
-            message: "What would you like to do?",
-            choices: ["View All Departments", "View All Roles", "View All Employees", "Add Department", "Add Role", "Add Employee", "Update Employee Role", "End",
-            ],
-        }
-    ]).then((answer) => {
-    switch (answer.choice) {
+  inquirer.prompt([
+    {
+      type: "list",
+      name: "initial",
+      message: "What would you like to do?",
+      choices: ["View All Departments", "View All Roles", "View All Employees", "Add Department", "Add Role", "Add Employee", "Update Employee Role", "End",
+      ],
+    }
+  ]).then((answer) => {
+    switch (answer.initial) {
       case "View All Departments":
         viewDepts();
         break;
@@ -64,5 +64,35 @@ function startUp() {
         connection.end();
         break;
     }
-});
+  });
+}
+
+function viewDepts() {
+  let query = "SELECT * FROM employee_db.department;"
+
+  connection.query(query, function (err, res) {
+    if (err) return err;
+    console.table(res);
+    startUp()
+  })
+}
+
+function viewRoles() {
+  let query = "SELECT * FROM employee_db.role;"
+
+  connection.query(query, function (err, res) {
+    if (err) return err;
+    console.table(res);
+    startUp()
+  })
+}
+
+function viewEmps() {
+  let query = "SELECT * FROM employee_db.employee;"
+
+  connection.query(query, function (err, res) {
+    if (err) return err;
+    console.table(res);
+    startUp()
+  })
 }
