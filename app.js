@@ -94,7 +94,7 @@ function viewRoles() {
 }
 
 function viewEmps() {
-  let query = "SELECT * FROM ((employee INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON role.department_id = department.id) ORDER BY employee.id ASC;"
+  let query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, employee.manager_id FROM ((employee INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON role.department_id = department.id) ORDER BY employee.id ASC;"
 
 
   connection.query(query, function (err, res) {
