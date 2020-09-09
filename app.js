@@ -106,11 +106,6 @@ function viewEmps() {
 
 //Functions used to add to database.
 function addDept() {
-  let query = "SELECT * FROM employee_db.department;"
-  connection.query(query, function (err, res) {
-    if (err) return err;
-    console.table(res);
-  })
   inquirer.prompt([
     {
       type: "input",
@@ -126,7 +121,6 @@ function addDept() {
       function (err, res) {
         if (err) throw err;
         console.log("Department added.\n");
-        console.table(res);
         startUp();
       })
   })
@@ -203,7 +197,7 @@ function addEmp() {
       connection.query("INSERT INTO employee SET ?",
         {
           first_name: answer.First,
-          last_name: answer.Salary,
+          last_name: answer.Last,
           role_id: answer.roleID
         },
         function (err, res) {
@@ -216,7 +210,47 @@ function addEmp() {
   })
 }
 
-// function updateEmp() {
-
-
-// }
+function updateEmp() {
+  let employees = [];
+  connection.query("SELECT * FROM employee", function (err, answer) {
+    for (let i = 0; i < answer.length; i++) {
+      let employeeString =
+        answer[i].id + " " + answer[i].first_name + " " + answer[i].last_name;
+      employees.push(employeeString);
+    }
+    let query = "SELECT * FROM role;"
+    connection.query(query, function (err, res) {
+      if (err) return err;
+      let roleChoice = res.map(({ id, title }) => ({
+        name: title,
+        value: id
+      }))
+      inquirer.prompt([
+        {
+          type: "list",
+          name: "Employee_Name",
+          message: "Select an employee to update:",
+          choices: employees
+        },
+        {
+          type: "list",
+          message: "Select new role for employee:",
+          name: "New_Role",
+          choices: roleChoice
+        }
+      ])
+        .then(function (answer) {
+          connection.query("UPDATE employee SET ?",
+            {
+              role_id: answer.New_Role
+            },
+            function (err, res) {
+              if (err) throw err;
+              console.log("Role updated.\n");
+              console.table(answer);
+              startUp();
+            })
+        })
+    });
+  });
+}
