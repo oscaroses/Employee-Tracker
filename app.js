@@ -175,32 +175,48 @@ function addRole() {
 }
 
 function addEmp() {
-  inquirer.prompt([
-    {
-      type: "input",
-      name: "First",
-      message: "Enter employee first name:"
-    },
-    {
-      type: "input",
-      name: "Last",
-      message: "Enter employee last name:"
-    },
-  ]).then((answer) => {
-    connection.query("INSERT INTO employee SET ?",
+  let query = "SELECT * FROM role;"
+  connection.query(query, function (err, res) {
+    if (err) return err;
+    let roleChoice = res.map(({ id, title }) => ({
+      name: title,
+      value: id
+    }))
+    inquirer.prompt([
       {
-        first_name: answer.First,
-        last_name: answer.Last
+        type: "input",
+        name: "First",
+        message: "Enter employees first name:"
       },
-      function (err, res) {
-        if (err) throw err;
-        console.log("Employee added.\n");
-        console.table(answer);
-        startUp();
-      })
+      {
+        type: "input",
+        name: "Last",
+        message: "Enter employees last name:"
+      },
+      {
+        type: "list",
+        name: "roleID",
+        message: "Choose a role for this employee:",
+        choices: roleChoice
+      }
+    ]).then((answer) => {
+      connection.query("INSERT INTO employee SET ?",
+        {
+          first_name: answer.First,
+          last_name: answer.Salary,
+          role_id: answer.roleID
+        },
+        function (err, res) {
+          if (err) throw err;
+          console.log("Employee added.\n");
+          console.table(answer);
+          startUp();
+        })
+    })
   })
 }
 
-function updateEmp() {
+// function updateEmp() {
 
-}
+
+// }
